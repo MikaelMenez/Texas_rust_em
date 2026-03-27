@@ -180,10 +180,15 @@ pub mod texas_rust_em {
 
             let card_code = base + *suit as u32 + *rank as u32;
 
-            if is_red {
-                write!(f, "{}{}{}", red_start, card_code, reset)
+            if let Some(card_char) = std::char::from_u32(card_code) {
+                if is_red {
+                    write!(f, "{}{}{}", red_start, card_char, reset)
+                } else {
+                    write!(f, "{}", card_char)
+                }
             } else {
-                write!(f, "{}", card_code)
+                // Caso o código seja inválido (não deveria acontecer com sua lógica)
+                write!(f, "[Error: Invalid Card Code]")
             }
         }
     }
