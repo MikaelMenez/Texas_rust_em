@@ -1,4 +1,5 @@
-pub mod cards {
+#![doc = include_str!("../README.md")]
+pub mod texas_rust_em {
 
     use rand::seq::SliceRandom;
     use std::cmp::Ordering;
@@ -170,8 +171,20 @@ pub mod cards {
                 Some(a) => a,
                 None => &0_u8,
             };
-            let card = base + *suit as u32 + *rank as u32;
-            write!(f, "{}", std::char::from_u32(card).unwrap())
+
+            let red_start = "\x1b[31m";
+            let reset = "\x1b[0m";
+
+            // Verifica se o naipe é vermelho
+            let is_red = self.suit == '♥' || self.suit == '♦';
+
+            let card_code = base + *suit as u32 + *rank as u32;
+
+            if is_red {
+                write!(f, "{}{}{}", red_start, card_code, reset)
+            } else {
+                write!(f, "{}", card_code)
+            }
         }
     }
     impl Ord for Card {
