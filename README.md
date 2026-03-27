@@ -1,7 +1,7 @@
 
 ---
 
-# Texas Rust'em 🃏
+# Texas Rust'em 🃁 
 
 **Texas Rust'em** é uma biblioteca leve e idiomática em Rust para gerenciamento de cartas, baralhos e jogadores, projetada especificamente para lógica de poker Texas Hold'em.
 
