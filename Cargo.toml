@@ -1,6 +1,6 @@
 [package]
 name = "texas_rust_em" # Deve ser único no crates.io
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Mikael Menezes <mixaelmenezes@gmail.com>"]
 edition = "2021"
 description = "Uma biblioteca para gerenciar baralhos e cartas de texas hold'em em Rust., definindo tipos e métodos que auxiliam no uso para o jogo"

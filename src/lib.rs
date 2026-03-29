@@ -1,5 +1,5 @@
 #![doc = include_str!("../README.md")]
-pub mod texas_rust_em {
+pub mod prelude {
 
     use rand::seq::SliceRandom;
     use std::cmp::Ordering;
@@ -33,26 +33,55 @@ pub mod texas_rust_em {
         King,
         Ace,
     }
-    #[derive(Debug)]
+    #[derive(Debug, PartialEq)]
     pub enum Blinder {
         BigBlind,
         Dealer,
         SmallBlind,
         Common,
     }
+    #[derive(Debug, PartialEq, PartialOrd)]
+    pub enum Hands {
+        HighCard,
+        Pair,
+        TwoPair,
+        ThreeOfaKind,
+        Straight,
+        Flush,
+        FullHouse,
+        FourOfaKind,
+        StraightFlush,
+        RoyalFlush,
+    }
     #[derive(Debug)]
     pub struct Player {
         pub hand: Vec<Card>,
         pub blind: Blinder,
+        pub current_hand: Hands,
     }
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, PartialEq, Eq, Clone)]
     pub struct Card {
         pub rank: char,
         pub suit: char,
     }
+
     #[derive(Debug)]
     pub struct Deck(pub Vec<Card>);
+    #[derive(Debug, Clone)]
+    pub struct Table(pub Vec<Card>);
+
     impl Display for Deck {
+        fn fmt(&self, f: &mut Formatter) -> Result {
+            let visual = self
+                .0
+                .iter()
+                .map(|c: &Card| c.to_string())
+                .collect::<Vec<_>>()
+                .join(", ");
+            write!(f, " {visual}")
+        }
+    }
+    impl Display for Table {
         fn fmt(&self, f: &mut Formatter) -> Result {
             let visual = self
                 .0
@@ -84,11 +113,29 @@ pub mod texas_rust_em {
             }
         }
     }
+    impl Table {
+        pub fn get_hand(deck: &mut Deck) -> std::result::Result<Table, DeckError> {
+            deck.suffle();
+            let card1 = deck.0.pop().ok_or(DeckError::InsufficientCards)?;
+            let card2 = deck.0.pop().ok_or(DeckError::InsufficientCards)?;
+            let card3 = deck.0.pop().ok_or(DeckError::InsufficientCards)?;
+            let card4 = deck.0.pop().ok_or(DeckError::InsufficientCards)?;
+            let card5 = deck.0.pop().ok_or(DeckError::InsufficientCards)?;
+            let mut table = Table { 0: vec![] };
+            table.0.push(card1);
+            table.0.push(card2);
+            table.0.push(card3);
+            table.0.push(card4);
+            table.0.push(card5);
+            Ok(table)
+        }
+    }
     impl Player {
         pub fn new(blind: Blinder) -> Player {
             Player {
                 hand: vec![],
                 blind,
+                current_hand: Hands::HighCard,
             }
         }
         pub fn get_hand(&mut self, deck: &mut Deck) -> std::result::Result<(), DeckError> {
@@ -133,6 +180,12 @@ pub mod texas_rust_em {
                 Self::King => 'k',
                 Self::Ace => 'a',
             }
+        }
+    }
+    impl Deck {
+        pub fn suffle(&mut self) {
+            let mut rng = rand::rng();
+            self.0.shuffle(&mut rng);
         }
     }
     impl PartialOrd for Card {
@@ -228,10 +281,7 @@ pub mod texas_rust_em {
                 suit: suit.symbol(),
             }
         }
-        pub fn suffle(cards: &mut Deck) {
-            let mut rng = rand::rng();
-            cards.0.shuffle(&mut rng);
-        }
+
         pub fn deck() -> Deck {
             return Deck(vec![
                 Card {
